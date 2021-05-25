@@ -1,0 +1,72 @@
+{% extends "layout.html" %}
+
+{% block title %}
+{% endblock %}
+
+{% block main %}
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <header style="background-color: hsl(201, 24%, 18%);">
+        {{ user[0].username }}
+    </header>
+    <!-- <ul class="nav"> -->
+    <a href="#">Home</a>
+    <a href="/profile" class='active'>Profile</a>
+    <a href="#">Settings</a>
+</div>
+
+<!-- Content -->
+<div class="content" style="height:inherit">
+    <main class="container p-5">
+        <form action="/profile" method="post">
+            <textarea required name="content" class="form-control" id="content" type="text"
+                placeholder="What's on your mind?" cols="50" rows="3"></textarea>
+            <br>
+            <button class="btn btn-primary" type="submit" style="margin: 1em;">Post</button>
+        </form>
+        {% if posts %}
+        {% for post in posts %}
+        <div class="card" style="margin: 1em;">
+            <div class="card-header" style="text-align: left;">
+                Posted by {{post.username}} at {{post.created_at}}
+            </div>
+            <div class="card-body" style="text-align: left;">
+                <p class="card-text" style="padding-left: 1em;">{{post.content}}</p>
+            </div>
+            <button class="btn btn-success like" id={{post.id}} style="width:fit-content;margin:auto">Like</button>
+            <p style="font-size:20px">{{post.like_count[0].count}}</p>
+            <div class="card-footer">
+                {% for comment in post.comments %}
+                <div class="card" style="text-align: left; margin: 0.5em;">
+                    <div class="card-body">
+                        <p class="card-text">{{comment.content}}</p>
+                        <footer class="blockquote-footer">{{comment.username}}</footer>
+                    </div>
+                </div>
+                {% endfor %}
+                <textarea name="" cols="90" rows="1" placeholder="Write a comment.." style="float:left"></textarea>
+                <button class="btn btn-primary comment" id={{post.id}}>done</button>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <h2 style="margin-top:2em">you don't have any posts yet</h2>
+        {% endif %}
+    </main>
+</div>
+<script>
+    $('.comment').click(function () {
+        $.post('/comment/' + $(this).attr('id'), { content: $(this).prev().val() }, function () {
+            location.reload();
+        })
+    });
+
+    $('.like').click(function () {
+        $.post('/like/' + $(this).attr('id'), function () {
+            location.reload();
+        })
+    });
+</script>
+
+{% endblock %}

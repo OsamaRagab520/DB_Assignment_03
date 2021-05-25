@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, width=device-width">
+
+    <!-- http://getbootstrap.com/docs/4.5/ -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
+        integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+
+    <!-- https://favicon.io/emoji-favicons/money-mouth-face/ -->
+    <link href="/static/favicon.ico" rel="icon">
+
+    <link href="/static/styles.css" rel="stylesheet">
+
+    <!-- http://getbootstrap.com/docs/4.5/ -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx"
+        crossorigin="anonymous"></script>
+    <script crossorigin="anonymous" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+        src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+    <script>
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // Handles AJAX requests
+        function AJAX_request(request_type, form, input_mode, inputs_ids, f) {
+            /**
+            * @param   request_type [ex: $.post]
+            * @param   form         [ex: $('#form_id')]
+            * @param   input_mode   [ex: true/false]
+            * @param   inputs_ids   [ex: ['username', 'password'] ]
+            * @param   f            [ex: function (data) {your logic} ]
+            */
+            let inputs_obj = {};
+            if (input_mode) {
+                for (let i = 0; i < inputs_ids.length; i++) {
+                    inputs_obj[inputs_ids[i]] = form.find(`input[name='${inputs_ids[i]}']`).val();
+                }
+            } else {
+                for (let i = 0; i < inputs_ids.length; i++) {
+                    inputs_obj[inputs_ids[i]] = form.find(inputs_ids[i]).val();
+                }
+            }
+            request_type(form.attr("action"), inputs_obj, f);
+        };
+
+        // Handle form for one AJAX request 
+        function form_AJAX(request_type, form, input_mode, inputs_ids, f) {
+            /**
+            * @param   request_type [ex: $.post]
+            * @param   form         [ex: $('#form_id')]
+            * @param   input_mode   [ex: true/false]
+            * @param   inputs_ids   [ex: ['username', 'password'] ]
+            * @param   f            [ex: function (data) {your logic} ]
+            */
+            form.submit(function (e) {
+
+                e.preventDefault();
+
+                // Call the AJAX request function
+                AJAX_request(request_type, $(this), input_mode, inputs_ids, f);
+            })
+        };
+    </script>
+    <!-- title -->
+    <title> Database II - Social Application : {% block title %}{% endblock %}</title>
+
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-md navbar-light bg-light border">
+        <a class="navbar-brand" href="/">My Social App</a>
+        <button aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler"
+            data-target="#navbar" data-toggle="collapse" type="button">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbar">
+            {% if session.user_id %}
+
+            <!-- pagess -->
+            <ul class="navbar-nav ml-auto mt-2">
+                <li class="nav-item"><a class="nav-link" href="/settings">Settings</a></li>
+                <li class="nav-item"><a class="nav-link" href="/logout">Log Out</a></li>
+            </ul>
+            {% else %}
+            <ul class="navbar-nav ml-auto mt-2">
+                <li class="nav-item"><a class="nav-link" href="/register">Register</a></li>
+                <li class="nav-item"><a class="nav-link" href="/login">Log In</a></li>
+            </ul>
+            {% endif %}
+        </div>
+    </nav>
+
+    {% if get_flashed_messages() %}
+    <header>
+        <div class="alert alert-primary border text-center" role="alert">
+            {{ get_flashed_messages() | join(" ") }}
+        </div>
+    </header>
+    {% endif %}
+
+    {% block main %}{% endblock %}
+
+</body>
+
+</html>

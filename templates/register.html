@@ -1,0 +1,96 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Register
+{% endblock %}
+
+{% block main %}
+<main class="container p-5">
+
+    <div id="status" class="alert alert-danger" role="alert"></div>
+    <form id="formid" action="/register">
+        <div class="form-group">
+            <label for="first_name">First name</label>
+            <br>
+            <input required autocomplete="off" autofocus class="form-control" name="first_name" type="text">
+        </div>
+        <div class="form-group">
+            <label for="last_name">Last name</label>
+            <br>
+            <input autocomplete="off" autofocus class="form-control" name="last_name" type="text">
+        </div>
+        <div class="form-group">
+            <label for="Email">Email address</label>
+            <br>
+            <input required autocomplete="off" autofocus class="form-control" name="email" type="email">
+        </div>
+        <div class="form-group">
+            <label for="username">Username</label>
+            <br>
+            <input required autocomplete="off" autofocus class="form-control" name="username" type="text">
+        </div>
+        <div class="form-group">
+            <label for="username">Password</label>
+            <br>
+            <input required autocomplete="off" autofocus class="form-control" name="password" type="password">
+        </div>
+        <div class="form-group">
+            <label>Gender</label>
+            <br>
+            <select required id="inputState" class="form-control">
+                {% for gender in genders %}
+                <option value={{ gender.id }}>{{ gender.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="birth_date">birth date (Optional)</label>
+            <br>
+            <input class="form-control" name="birth_date" type="date">
+        </div>
+        <div class="form-group">
+            <label for="address">Address</label>
+            <br>
+            <input autocomplete="off" autofocus class="form-control" name="address" type="text"
+                placeholder="(Optional)">
+        </div>
+        <div class="form-group">
+            <label for="Bio">Bio</label>
+            <br>
+            <textarea class="form-control" placeholder="(Optional)" type="text"></textarea>
+        </div>
+        <button class="btn btn-primary" type="submit">Sign up</button>
+    </form>
+
+    <script>
+
+        $('#formid').submit(function (e) {
+            e.preventDefault();
+            // AJAX POST request  $.request_type(endpoint, data, function (reponse_data))
+            $.post($(this).attr("action"), {
+                first_name: $(this).find("input[name='first_name']").val(),
+                last_name: $(this).find("input[name='last_name']").val(),
+                email: $(this).find("input[name='email']").val(),
+                username: $(this).find("input[name='username']").val(),
+                password: $(this).find("input[name='password']").val(),
+                gender: $(this).find("option:selected").val(),
+                birth_date: $(this).find("input[name='birth_date']").val(),
+                address: $(this).find("input[name='address']").val(),
+                bio: $("textarea").val()
+            }, function (data) {
+
+                //  Display error message
+                if (data.redirect == false) {
+                    $('#status').removeAttr('hidden');
+                    $('#status').text(data.msg);
+                }
+
+                // Redirect the user to Homepage
+                else {
+                    window.location.replace("{{ url_for('index', _external = True) }}" + `profile`)
+                }
+            });
+        })
+    </script>
+</main>
+{% endblock %}
